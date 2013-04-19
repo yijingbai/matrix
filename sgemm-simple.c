@@ -12,7 +12,7 @@ void sgemm(int m, int n, float *A, float *C) {
                 }
             }
 
-            for (int r = 0; r < 14; r++) {
+            for (int r = 0; r < 10; r++) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
