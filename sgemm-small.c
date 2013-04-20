@@ -28,7 +28,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
             }
         }
         
-        for (i = n_40; i < n_20; i += 20) {
+        while (i < n_20) {
             __m128 c[5];
             for (int r = 0; r < 5; r++)
                 c[r] = _mm_setzero_ps();
@@ -42,6 +42,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
             for (int r = 0; r < 5; r++) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
+            i += 20
         }
 
         /*
