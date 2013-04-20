@@ -27,7 +27,8 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-        for (i = n-n%40 ; i < n-n%20; i += 20) {
+        
+        for (i = n_40; i < n_20; i += 20) {
             __m128 c[5];
             for (int r = 0; r < 5; r++)
                 c[r] = _mm_setzero_ps();
@@ -43,7 +44,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
             }
         }
 
-    
+        /*
         for (i = n-n%20; i < n-n%8; i += 8) {
             __m128 c[2];
             for (int r = 0; r < 2; r++)
@@ -74,8 +75,8 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }   
         }
-
-        for (i = n-n%4; i < n; i++) {
+        */
+        for (i = n_40; i < n; i++) {
             for (int k = 0; k < m; k++) {
                 C[i+j*n] += A[i+k*(n)] * A[j*(n+1)+k*(n)];
             }
