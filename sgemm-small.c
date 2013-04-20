@@ -5,14 +5,14 @@
 
 void sgemm(int m, int n, int d, float *A, float *C) {
     int i, j = 0;
-    /*int n_40 = n-n%40;
+    int n_40 = n-n%40;
     int n_20 = n-n%20;
     int n_16 = n-n%16;
     int n_12 = n-n%12;
     int n_8  = n-n%8;
-    int n_4  = n-n%4;*/
+    int n_4  = n-n%4;
     for (j = 0; j < n; j++) {
-        for (i = 0; i < n-n%40; i += 40) {
+        for (i = 0; i < n_40; i += 40) {
             __m128 c[10];
             for (int r = 0; r < 10; r++)
                 c[r] = _mm_setzero_ps();
@@ -42,37 +42,9 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-        for (i = n-n%20; i < n-n%16; i += 16) {
-            __m128 c[4];
-            for (int r = 0; r < 4; r++)
-                c[r] = _mm_setzero_ps();
-            for (int k = 0; k < m; k++) {
-                __m128 b = _mm_load1_ps(A+j*(n+1)+k*(n));
-                for (int r = 0; r < 4; r++) {
-                    c[r] = _mm_add_ps(c[r], _mm_mul_ps(_mm_loadu_ps(A+i+n*k+r*4), b));
-                }
-            }
 
-            for (int r = 0; r < 4; r++) {
-                _mm_storeu_ps(C+i+r*4+j*n, c[r]);
-            }
-        }
-        for (i = n-n%16; i < n-n%12; i += 12) {
-            __m128 c[3];
-            for (int r = 0; r < 3; r++)
-                c[r] = _mm_setzero_ps();
-            for (int k = 0; k < m; k++) {
-                __m128 b = _mm_load1_ps(A+j*(n+1)+k*(n));
-                for (int r = 0; r < 3; r++) {
-                    c[r] = _mm_add_ps(c[r], _mm_mul_ps(_mm_loadu_ps(A+i+n*k+r*4), b));
-                }
-            }
-
-            for (int r = 0; r < 3; r++) {
-                _mm_storeu_ps(C+i+r*4+j*n, c[r]);
-            }   
-        }
-        for (i = n-n%12; i < n-n%8; i += 8) {
+    
+        for (i = n-n%20; i < n-n%8; i += 8) {
             __m128 c[2];
             for (int r = 0; r < 2; r++)
                 c[r] = _mm_setzero_ps();
