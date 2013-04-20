@@ -6,13 +6,14 @@
 void sgemm(int m, int n, int d, float *A, float *C) {
     int i, j = 0;
     int n_40 = n-n%40;
+    printf("n_40 is %d", n_40);
     int n_20 = n-n%20;
     int n_16 = n-n%16;
     int n_12 = n-n%12;
     int n_8  = n-n%8;
     int n_4  = n-n%4;
     for (j = 0; j < n; j++) {
-        while (i < n_40) {
+        for (i = 0; i < n_40; i += 40) {
             __m128 c[10];
             for (int r = 0; r < 10; r++)
                 c[r] = _mm_setzero_ps();
@@ -26,7 +27,6 @@ void sgemm(int m, int n, int d, float *A, float *C) {
             for (int r = 0; r < 10; r++) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
-            i += 40;
         }
 
 
