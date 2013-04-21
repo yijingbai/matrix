@@ -7,6 +7,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
     int i, j = 0;
     int n_40 = n-n%40;
     int n_36 = n-(n-n_40)%36;
+    int n_32 = n-(n-n_36)%32;
     int n_20 = n-(n-n_36)%20;
     int n_12 = n-(n-n_20)%12;
     int n_4  = n-(n-n_12)%4;
@@ -43,7 +44,23 @@ void sgemm(int m, int n, int d, float *A, float *C) {
             }
         }
 
-        for (i = n_36; i < n_20; i += 20) {
+        for (i = n_36; i < n_32; i += 32) {
+            __m128 c[8];
+            for (int r = 0; r < 8; r++)
+                c[r] = _mm_setzero_ps();
+            for (int k = 0; k < m; k++) {
+                __m128 b = _mm_load1_ps(A+j*(n+1)+k*(n));
+                for (int r = 0; r < 8; r++) {
+                    c[r] = _mm_add_ps(c[r], _mm_mul_ps(_mm_loadu_ps(A+i+n*k+r*4), b));
+                }
+            }
+
+            for (int r = 0; r < 8; r++) {
+                _mm_storeu_ps(C+i+r*4+j*n, c[r]);
+            }
+        }
+
+        for (i = n_32; i < n_20; i += 20) {
             __m128 c[5];
             for (int r = 0; r < 5; r++)
                 c[r] = _mm_setzero_ps();
