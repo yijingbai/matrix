@@ -1,7 +1,8 @@
- #include <stdio.h>
- #include <stdlib.h>
- #include <nmmintrin.h>
- #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <nmmintrin.h>
+#include <string.h>
+#include <omp.h>
 
 void sgemm(int m, int n, int d, float *A, float *C) {
     int i, j = 0;
@@ -15,6 +16,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
     int n_12 = n-n_tmp%12;
     n_tmp = n-n_12;
     int n_4  = n-n_tmp%4;
+    #pragma omp parallel for
     for (j = 0; j < n; j++) {
         for (i = 0; i < n_40; i += 40) {
             __m128 c[10];
@@ -44,7 +46,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+(r+4)*4+j*n, c[r+4]);
             }
         }
-
+        #pragma omp parallel for
         for (i = n_40; i < n_36; i += 36) {
             __m128 c[9];
             for (int r = 0; r < 9; r++)
@@ -60,7 +62,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-
+        #pragma omp parallel for
         for (i = n_36; i < n_20; i += 20) {
             __m128 c[5];
             for (int r = 0; r < 5; r+=5) {
@@ -81,7 +83,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-
+        #pragma omp parallel for
         for (i = n_20; i < n_12; i += 12) {
             __m128 c[3];
             for (int r = 0; r < 3; r+=3) {
@@ -105,7 +107,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+(r+2)*4+j*n, c[r+2]);
             }
         }
-
+        #pragma omp parallel for
         for (i = n_12; i < n_4; i += 4) {
             __m128 c[1];
             for (int r = 0; r < 1; r++)
@@ -121,7 +123,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-        
+        #pragma omp parallel for
         for (i = n_4; i < n; i++) {
             for (int k = 0; k < m; k++) {
                 C[i+j*n] += A[i+k*(n)] * A[j*(n+1)+k*(n)];
