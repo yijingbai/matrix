@@ -94,10 +94,8 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 }
             }
 
-            for (int r = 0; r < 3; r+=3) {
+            for (int r = 0; r < 3; r++) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
-                _mm_storeu_ps(C+i+(r+1)*4+j*n, c[r+1]);
-                _mm_storeu_ps(C+i+(r+2)*4+j*n, c[r+2]);
             }
         }
 
