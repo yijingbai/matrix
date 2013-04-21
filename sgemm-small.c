@@ -5,12 +5,16 @@
 
 void sgemm(int m, int n, int d, float *A, float *C) {
     int i, j = 0;
+    int n_tmp = 0;
     int n_40 = n-n%40;
-    int n_36 = n-(n-n_40)%36;
-    int n_32 = n-(n-n_36)%32;
-    int n_20 = n-(n-n_36)%20;
-    int n_12 = n-(n-n_20)%12;
-    int n_4  = n-(n-n_12)%4;
+    n_tmp = n-n_40;
+    int n_36 = n-n_tmp%36;
+    n_tmp = n-n_36;
+    int n_20 = n-n_tmp%20;
+    n_tmp = n-n_20;
+    int n_12 = n-n_tmp%12;
+    n_tmp = n-n_12;
+    int n_4  = n-n_tmp%4;
     for (j = 0; j < n; j++) {
         for (i = 0; i < n_40; i += 40) {
             __m128 c[10];
