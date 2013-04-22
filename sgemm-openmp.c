@@ -17,7 +17,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
     #pragma omp parallel for
     for (j = 0; j < n; j++) {
 
-        #pragma omp parallel for    
+        #pragma omp parallel for
         for (i = 0; i < n_40; i += 40) {
             __m128 c[10];
             for (int r = 0; r < 10; r+=5) {
