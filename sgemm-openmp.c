@@ -18,7 +18,6 @@ void sgemm(int m, int n, int d, float *A, float *C) {
     #pragma omp parallel for
     for (int j = 0; j < n; j++) {
 
-
         for (int i = 0; i < n_40; i += 40) {
             __m128 c[10];
             for (int r = 0; r < 10; r++) {
@@ -37,7 +36,7 @@ void sgemm(int m, int n, int d, float *A, float *C) {
         }
 
 
-        for (int i = n_48; i < n_20; i += 20) {
+        for (int i = n_40; i < n_20; i += 20) {
             __m128 c[5];
             for (int r = 0; r < 5; r++) {
                 c[r] = _mm_setzero_ps();
@@ -89,7 +88,6 @@ void sgemm(int m, int n, int d, float *A, float *C) {
                 _mm_storeu_ps(C+i+r*4+j*n, c[r]);
             }
         }
-
 
         for (int i = n_4; i < n; i++) {
             for (int k = 0; k < m; k++) {
